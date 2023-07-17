@@ -1,0 +1,19 @@
+<!DOCTYPE html>
+html
+  head
+    title Новый год!
+    = csrf_meta_tags
+    = stylesheet_link_tag    'application', media: 'all', 'data-turbolinks-track': 'reload'
+    = javascript_include_tag 'application', 'data-turbolinks-track': 'reload'
+    = yield :snow_script
+    meta name="viewport" content="width=device-width initial-scale=1 shrink-to-fit=no"
+  body
+    nav.navbar.navbar-light.bg-primary.p-3.mb-3
+      .container
+        .col-6
+          a.navbar-brand.text-white href='#'
+            | НОВЫЙ ГОД: CНЕГ НА ВАШЕМ САЙТЕ
+        .col-5.text-right
+          = yield :buttons
+    .container
+      = yield

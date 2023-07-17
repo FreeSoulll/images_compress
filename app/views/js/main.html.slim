@@ -1,0 +1,77 @@
+- content_for :buttons
+  = link_to 'Назад в БО', "https://#{current_account.insales_domain}/admin2/dashboard", class: 'btn btn-link text-white'
+  - disabled_class = paid? ? '' : 'disabled'
+  - if installed?
+    = link_to 'Выключить', turn_off_path, method: :post, class: 'btn btn-danger'
+  - else
+    = link_to 'Включить', turn_on_path, method: :post, class: "btn btn-success #{disabled_class}"
+
+- content_for :snow_script
+  script
+    = JsManager.snow_script_for(current_account).html_safe
+
+
+.row
+  .col-12
+    - unless paid?
+      .alert.alert-danger
+        | Вы еще не оплатили наш счет в БО вашего магазна InSales.
+        br
+        | Пожалуйста, оплатите счет чтобы получить возможность включить снег на сайте.
+    .card
+      .card-body
+        h4.card-title Настройки
+        h6.card-subtitle.text-secondary.mb-3 Сделайте ваши снежинки идеальными
+        = form_for :account, url: update_settings_path do |f|
+          .form-group
+            = f.label 'Скорость'
+            = f.number_field :speed, class: 'form-control', in: 1..50, value: current_account.speed
+            small.form-text.text-muted
+              | Максимальная скорость снежинок на вашем сайте
+              ul
+                li с какого-то момента приятный новогодний снег может превратиться в холодную метель, используйте большие скорости с осторожностью
+                li слишком большая скорость может создавать дополнительную нагрузку на слабых компьютерах
+          .form-group
+            = f.label 'Цвет снежинок'
+            - color_regexp = '(#([0-9a-fA-F]{3}){1,2}|(rgba|hsla)\(\d{1,3}%?(,\s?\d{1,3}%?){2},\s?(1|0?\.\d+)\)|(rgb|hsl)\(\d{1,3}%?(,\s?\d{1,3}%?){2}\))'
+            = f.text_field :color,  class: 'form-control', value: current_account.color, pattern: color_regexp
+            small.form-text.text-muted
+              | Цвет снежинок на вашем сайте
+              ul
+                li
+                  | поддерживаемые форматы: hex, rgb(a), hsl(a); выбрать можно 
+                  a href='https://www.google.ru/search?q=color+picker' здесь
+                li цвет поля ввода совпадает с его значением
+                li не бойтесь экспериментировать!
+          .form-group
+            = f.label 'Количество снежинок'
+            = f.number_field :snowflakes_count, class: 'form-control', in: 1..200, value: current_account.snowflakes_count
+            small.form-text.text-muted
+              | Количество снежинок которые одновременно будет находиться на экране
+              ul
+                li слишком большое количество снежинок может создавать дополнительную нагрузку на слабых компьютерах
+                li слишком большое количества снежинок может ухудшить читаемость сайта: смотрите чтобы ваши товары не замело
+          .form-group
+            = f.label 'Размер снежинок'
+            = f.number_field :size, class: 'form-control', in: 5..50, value: current_account.size
+            small.form-text.text-muted
+              | Размер падающих снежинок в пикселях
+          .form-check
+            = f.label :hide_on_mobile, class: 'form-check-label'
+              = f.check_box :hide_on_mobile, class: 'form-check-input', checked: current_account.hide_on_mobile
+              | Не запускать снег на мобильных устройствах
+            small.form-text.text-muted
+              | Снег может значительно повысить энергопотребление и ухудшить читабельность сайта на устройствах с маленьким экраном
+          = f.submit 'Сохранить настройки', class: 'btn btn-primary col-12'
+
+javascript:
+  $(document).ready(function() {
+    color_input = $('#account_color');
+    update_color = function() {
+      color_input.css('background-color', color_input.val());
+    }
+    color_input.bind('input', function() {
+      update_color();
+    });
+    update_color();
+  });

@@ -1,0 +1,13 @@
+default: &default
+  adapter: postgresql
+  encoding: unicode
+
+production:
+  <<: *default
+  database: new_year_production
+  username: new_year
+  password: <%= ENV['MYAPP_DATABASE_PASSWORD'] %>
+
+development:
+  <<: *default
+  database: new_year_development
